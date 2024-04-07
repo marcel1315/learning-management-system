@@ -5,6 +5,7 @@ import com.zerobase.fastlms.admin.mapper.MemberMapper;
 import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.components.MailComponents;
 import com.zerobase.fastlms.course.model.ServiceResult;
+import com.zerobase.fastlms.member.entity.LoginHistory;
 import com.zerobase.fastlms.member.entity.Member;
 import com.zerobase.fastlms.member.entity.MemberCode;
 import com.zerobase.fastlms.member.exception.MemberNotEmailAuthException;
@@ -32,23 +33,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class MemberServiceImpl implements MemberService {
-    
+
     private final MemberRepository memberRepository;
     private final LoginHistoryRepository loginHistoryRepository;
     private final MailComponents mailComponents;
-    
+
     private final MemberMapper memberMapper;
-    
+
     /**
      * 회원 가입
      */
     @Override
     public boolean register(MemberInput parameter) {
-    
+
         Optional<Member> optionalMember = memberRepository.findById(parameter.getUserId());
         if (optionalMember.isPresent()) {
             //현재 userId에 해당하는 데이터 존재
@@ -57,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 
         String encPassword = BCrypt.hashpw(parameter.getPassword(), BCrypt.gensalt());
         String uuid = UUID.randomUUID().toString();
-        
+
         Member member = Member.builder()
                 .userId(parameter.getUserId())
                 .userName(parameter.getUserName())
@@ -69,13 +71,13 @@ public class MemberServiceImpl implements MemberService {
                 .userStatus(Member.MEMBER_STATUS_REQ)
                 .build();
         memberRepository.save(member);
-        
+
         String email = parameter.getUserId();
         String subject = "fastlms 사이트 가입을 축하드립니다. ";
         String text = "<p>fastlms 사이트 가입을 축하드립니다.<p><p>아래 링크를 클릭하셔서 가입을 완료 하세요.</p>"
                 + "<div><a target='_blank' href='http://localhost:8080/member/email-auth?id=" + uuid + "'> 가입 완료 </a></div>";
         mailComponents.sendMail(email, subject, text);
-        
+
         return true;
     }
 
@@ -83,60 +85,60 @@ public class MemberServiceImpl implements MemberService {
     public void saveLoginHistory(LoginHistoryDto loginHistoryDto) {
         loginHistoryRepository.save(loginHistoryDto.toEntity());
     }
-    
+
     @Override
     public boolean emailAuth(String uuid) {
-        
+
         Optional<Member> optionalMember = memberRepository.findByEmailAuthKey(uuid);
         if (!optionalMember.isPresent()) {
             return false;
         }
-        
+
         Member member = optionalMember.get();
-        
+
         if (member.isEmailAuthYn()) {
             return false;
         }
-        
+
         member.setUserStatus(Member.MEMBER_STATUS_ING);
         member.setEmailAuthYn(true);
         member.setEmailAuthDt(LocalDateTime.now());
         memberRepository.save(member);
-        
+
         return true;
     }
-    
+
     @Override
     public boolean sendResetPassword(ResetPasswordInput parameter) {
-    
+
         Optional<Member> optionalMember = memberRepository.findByUserIdAndUserName(parameter.getUserId(), parameter.getUserName());
         if (!optionalMember.isPresent()) {
             throw new UsernameNotFoundException("회원 정보가 존재하지 않습니다.");
         }
-        
+
         Member member = optionalMember.get();
-        
+
         String uuid = UUID.randomUUID().toString();
-        
+
         member.setResetPasswordKey(uuid);
         member.setResetPasswordLimitDt(LocalDateTime.now().plusDays(1));
         memberRepository.save(member);
-        
+
         String email = parameter.getUserId();
         String subject = "[fastlms] 비밀번호 초기화 메일 입니다. ";
         String text = "<p>fastlms 비밀번호 초기화 메일 입니다.<p>" +
                 "<p>아래 링크를 클릭하셔서 비밀번호를 초기화 해주세요.</p>"+
                 "<div><a target='_blank' href='http://localhost:8080/member/reset/password?id=" + uuid + "'> 비밀번호 초기화 링크 </a></div>";
         mailComponents.sendMail(email, subject, text);
-    
+
         return false;
     }
-    
+
     @Override
     public List<MemberDto> list(MemberParam parameter) {
-        
+
         long totalCount = memberMapper.selectListCount(parameter);
-        
+
         List<MemberDto> list = memberMapper.selectList(parameter);
         if (!CollectionUtils.isEmpty(list)) {
             int i = 0;
@@ -146,25 +148,44 @@ public class MemberServiceImpl implements MemberService {
                 i++;
             }
         }
-        
+
         return list;
-        
+
         //return memberRepository.findAll();
     }
-    
+
     @Override
     public MemberDto detail(String userId) {
-        
+
         Optional<Member> optionalMember  = memberRepository.findById(userId);
         if (!optionalMember.isPresent()) {
             return null;
         }
-        
+
         Member member = optionalMember.get();
-        
+
         return MemberDto.of(member);
     }
-    
+
+    @Override
+    public List<LoginHistoryDto> listLoginHistory(String userId) {
+        List<LoginHistory> list = loginHistoryRepository.findAllByUserIdOrderByLoginDtDesc(userId);
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+
+        List<LoginHistoryDto> listDto = new ArrayList<>();
+        int i = list.size();
+        for (LoginHistory lh : list) {
+            LoginHistoryDto dto = LoginHistoryDto.of(lh);
+            dto.setSeq(i);
+            i--;
+
+            listDto.add(dto);
+        }
+        return listDto;
+    }
+
     @Override
     public boolean updateStatus(String userId, String userStatus) {
     
