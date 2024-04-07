@@ -5,6 +5,7 @@ import com.zerobase.fastlms.admin.dto.MemberDto;
 import com.zerobase.fastlms.admin.model.MemberParam;
 import com.zerobase.fastlms.admin.model.MemberInput;
 import com.zerobase.fastlms.course.controller.BaseController;
+import com.zerobase.fastlms.member.model.LoginHistoryDto;
 import com.zerobase.fastlms.member.service.MemberService;
 import com.zerobase.fastlms.util.PageUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AdminMemberController extends BaseController {
         
         parameter.init();
         List<MemberDto> members = memberService.list(parameter);
-        
+
         long totalCount = 0;
         if (members != null && members.size() > 0) {
             totalCount = members.get(0).getTotalCount();
@@ -47,8 +48,11 @@ public class AdminMemberController extends BaseController {
         parameter.init();
         
         MemberDto member = memberService.detail(parameter.getUserId());
+        List<LoginHistoryDto> loginHistories = memberService.listLoginHistory(parameter.getUserId());
+
         model.addAttribute("member", member);
-       
+        model.addAttribute("loginHistories", loginHistories);
+
         return "admin/member/detail";
     }
     

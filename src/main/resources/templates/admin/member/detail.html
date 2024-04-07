@@ -96,9 +96,27 @@
             </tbody>
         </table>
 
+        <h2>로그인 접속 목록</h2>
+
+        <table>
+            <tbody>
+                <tr>
+                    <th>NO</th>
+                    <th>로그인 일자</th>
+                    <th>접속 IP</th>
+                    <th>접속 UserAgent</th>
+                </tr>
+                <tr th:each="lh : ${loginHistories}">
+                    <td th:text="${lh.seq}">1</td>
+                    <td th:text="${lh.loginDtText}"></td>
+                    <td th:text="${lh.ip}">IP</td>
+                    <td th:text="${lh.userAgent}">UserAgent</td>
+                </tr>
+            </tbody>
+        </table>
+
         <div>
             <a href="list.do"> 목록 </a>
-
         </div>
 
 
