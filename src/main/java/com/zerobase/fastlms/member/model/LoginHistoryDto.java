@@ -1,6 +1,6 @@
-package com.zerobase.fastlms.main.model;
+package com.zerobase.fastlms.member.model;
 
-import com.zerobase.fastlms.main.entity.LoginHistory;
+import com.zerobase.fastlms.member.entity.LoginHistory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

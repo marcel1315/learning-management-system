@@ -9,8 +9,10 @@ import com.zerobase.fastlms.member.entity.Member;
 import com.zerobase.fastlms.member.entity.MemberCode;
 import com.zerobase.fastlms.member.exception.MemberNotEmailAuthException;
 import com.zerobase.fastlms.member.exception.MemberStopUserException;
+import com.zerobase.fastlms.member.model.LoginHistoryDto;
 import com.zerobase.fastlms.member.model.MemberInput;
 import com.zerobase.fastlms.member.model.ResetPasswordInput;
+import com.zerobase.fastlms.member.repository.LoginHistoryRepository;
 import com.zerobase.fastlms.member.repository.MemberRepository;
 import com.zerobase.fastlms.member.service.MemberService;
 import com.zerobase.fastlms.util.PasswordUtils;
@@ -36,6 +38,7 @@ import java.util.UUID;
 public class MemberServiceImpl implements MemberService {
     
     private final MemberRepository memberRepository;
+    private final LoginHistoryRepository loginHistoryRepository;
     private final MailComponents mailComponents;
     
     private final MemberMapper memberMapper;
@@ -74,6 +77,11 @@ public class MemberServiceImpl implements MemberService {
         mailComponents.sendMail(email, subject, text);
         
         return true;
+    }
+
+    /** 로그인 히스토리 저장 */
+    public void saveLoginHistory(LoginHistoryDto loginHistoryDto) {
+        loginHistoryRepository.save(loginHistoryDto.toEntity());
     }
     
     @Override

@@ -1,4 +1,4 @@
-package com.zerobase.fastlms.main.entity;
+package com.zerobase.fastlms.member.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
