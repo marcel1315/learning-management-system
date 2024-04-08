@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static com.zerobase.fastlms.configuration.Constants.URL_FILE_ROOT;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
@@ -33,7 +35,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/favicon.ico", "/files/**");
+        web.ignoring().antMatchers("/favicon.ico", URL_FILE_ROOT + "**");
         
         super.configure(web);
     }
