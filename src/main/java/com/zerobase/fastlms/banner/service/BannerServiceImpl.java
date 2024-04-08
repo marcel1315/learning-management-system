@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +39,6 @@ public class BannerServiceImpl implements BannerService {
                 .link(parameter.getLink())
                 .subject(parameter.getSubject())
                 .ordering(parameter.getOrdering())
-                .imagePath(parameter.getImagePath())
                 .openTarget(parameter.getOpenTarget())
                 .publish(parameter.isPublish())
                 .regDt(LocalDateTime.now())
@@ -97,6 +97,17 @@ public class BannerServiceImpl implements BannerService {
         }
 
         return list;
+    }
+
+    @Override
+    public List<BannerDto> listOnlyPublish() {
+        List<Banner> list = bannerRepository.findByPublishOrderByOrderingAsc(true);
+        List<BannerDto> listDto = new ArrayList<>();
+        for (Banner x : list) {
+            listDto.add(BannerDto.of(x));
+        }
+
+        return listDto;
     }
 
     @Override

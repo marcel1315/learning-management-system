@@ -22,10 +22,9 @@ public class Banner {
     Long id;
 
     String subject;
-    String imagePath;
     String link;
     String openTarget;
-    String ordering;
+    int ordering;
     boolean publish;
 
     LocalDateTime regDt;//등록일(추가날짜)

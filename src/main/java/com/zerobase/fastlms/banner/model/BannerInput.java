@@ -7,10 +7,9 @@ public class BannerInput {
     Long id;
 
     String subject;
-    String imagePath;
     String link;
     String openTarget;
-    String ordering;
+    int ordering;
     boolean publish;
 
     //삭제를 위한

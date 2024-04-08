@@ -16,10 +16,9 @@ public class BannerDto {
     Long id;
 
     String subject;
-    String imagePath;
     String link;
     String openTarget;
-    String ordering;
+    int ordering;
     boolean publish;
     LocalDateTime regDt;
     LocalDateTime udtDt;
@@ -35,7 +34,6 @@ public class BannerDto {
         return BannerDto.builder()
                 .id(banner.getId())
                 .subject(banner.getSubject())
-                .imagePath(banner.getImagePath())
                 .link(banner.getLink())
                 .openTarget(banner.getOpenTarget())
                 .ordering(banner.getOrdering())
