@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BannerServiceImpl {
+public class BannerServiceImpl implements BannerService {
 
     @Value("${file.local-file-root}")
     private String LOCAL_FILE_ROOT;
@@ -32,6 +31,7 @@ public class BannerServiceImpl {
 
     private final BannerMapper bannerMapper;
 
+    @Override
     public boolean add(BannerInput parameter) {
 
         Banner banner = Banner.builder()
@@ -50,6 +50,7 @@ public class BannerServiceImpl {
         return true;
     }
 
+    @Override
     public boolean set(BannerInput parameter) {
 
         Optional<Banner> optionalBanner = bannerRepository.findById(parameter.getId());
@@ -75,10 +76,12 @@ public class BannerServiceImpl {
         return true;
     }
 
+    @Override
     public BannerDto getById(long id) {
         return bannerRepository.findById(id).map(BannerDto::of).orElse(null);
     }
 
+    @Override
     public List<BannerDto> list(BannerParam parameter) {
 
         long totalCount = bannerMapper.selectListCount(parameter);
@@ -96,6 +99,7 @@ public class BannerServiceImpl {
         return list;
     }
 
+    @Override
     public boolean del(String idList) {
         if (idList != null && idList.length() > 0) {
             String[] ids = idList.split(",");

@@ -4,6 +4,7 @@ import com.zerobase.fastlms.banner.dto.BannerDto;
 import com.zerobase.fastlms.banner.model.BannerInput;
 import com.zerobase.fastlms.banner.model.BannerOpenTarget;
 import com.zerobase.fastlms.banner.model.BannerParam;
+import com.zerobase.fastlms.banner.service.BannerService;
 import com.zerobase.fastlms.banner.service.BannerServiceImpl;
 import com.zerobase.fastlms.configuration.Constants;
 import com.zerobase.fastlms.course.controller.BaseController;
@@ -36,7 +37,7 @@ public class AdminBannerController extends BaseController {
     @Value("${file.local-file-root}")
     private String LOCAL_FILE_ROOT;
 
-    private final BannerServiceImpl bannerService;
+    private final BannerService bannerService;
 
     @GetMapping("/admin/banner/list.do")
     public String list(Model model, BannerParam parameter) {
