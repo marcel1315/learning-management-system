@@ -35,13 +35,19 @@
     <h1>메인 페이지 </h1>
     <div th:replace="/fragments/layout.html :: fragment-body-menu"></div>
 
-    <ul class="bxslider">
-        <li th:each="banner : ${banners}">
-            <a th:href="${banner.link}" th:target="${banner.openTarget}">
-                <img th:src="@{${banner.urlFilename}}" th:alt="${banner.subject}" th:title="${banner.subject}" />
-            </a>
-        </li>
-    </ul>
+    <div th:if="${banners.size() > 0}">
+        <ul class="bxslider">
+            <li th:each="banner : ${banners}">
+                <a th:href="${banner.link}" th:target="${banner.openTarget}">
+                    <img th:src="@{${banner.urlFilename}}" th:alt="${banner.subject}" th:title="${banner.subject}" />
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${banners.size() == 0}">
+        <p>등록된 배너가 없습니다.</p>
+    </div>
 
 </body>
 </html>
