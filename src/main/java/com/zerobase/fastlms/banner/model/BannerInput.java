@@ -13,6 +13,10 @@ public class BannerInput {
     String ordering;
     boolean publish;
 
+    //삭제를 위한
+    String idList;
+
+    //ADD
     String filename;
     String urlFilename;
 }

@@ -7,16 +7,26 @@ import com.zerobase.fastlms.banner.model.BannerInput;
 import com.zerobase.fastlms.banner.model.BannerParam;
 import com.zerobase.fastlms.banner.repository.BannerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BannerServiceImpl {
+
+    @Value("${file.local-file-root}")
+    private String LOCAL_FILE_ROOT;
 
     private final BannerRepository bannerRepository;
 
@@ -84,5 +94,33 @@ public class BannerServiceImpl {
         }
 
         return list;
+    }
+
+    public boolean del(String idList) {
+        if (idList != null && idList.length() > 0) {
+            String[] ids = idList.split(",");
+            for (String x : ids) {
+                long id = 0L;
+                try {
+                    id = Long.parseLong(x);
+                } catch (Exception e) {
+                }
+
+                if (id > 0) {
+                    try {
+                        Optional<Banner> banner = bannerRepository.findById(id);
+                        Path fileStorageLocation = Paths.get(LOCAL_FILE_ROOT).toAbsolutePath().normalize();
+                        Path targetLocation = fileStorageLocation.resolve(banner.get().getFilename());
+                        Files.deleteIfExists(targetLocation);
+                    } catch (Exception e) {
+                        log.warn("File deletion fail. NEED INSPECTION");
+                    }
+
+                    bannerRepository.deleteById(id);
+                }
+            }
+        }
+
+        return true;
     }
 }
