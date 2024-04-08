@@ -10,6 +10,7 @@ import java.util.List;
 public interface BannerMapper {
 
     long selectListCount(BannerParam parameter);
+
     List<BannerDto> selectList(BannerParam parameter);
 
 }
